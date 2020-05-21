@@ -7,15 +7,17 @@ type InputComponentProps = {
 
 
 const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) => {
-  var counter = 0
+  var counter: number = 1
+  var p1Wins : number = 0
+  var p2Wins : number = 0
 
   const [player1Choice, setP1Choice] = useState<string>(Player1Input)
   const [player2Choice, setP2Choice] = useState<string>(Player2Input)
-  const [rpsResults, setRPSResults]= useState()
+  const [rpsResults, setRPSResults] = useState()
+  const [rpsHistory, setRPShistory] = useState({ rpsResults })
   const [p1Error, setP1Error] = useState()
   const [p2Error, setP2Error] = useState<string>()
   
-
   enum choices{
     'ROCK', 'PAPER', 'SCISSORS'
   }
@@ -37,22 +39,39 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
       };
 
       await fetch('http://localhost:8080/game/play', requestOptions)
-        .then(response =>  response.text())
+        .then(response =>  response.json())
         .then(data => {
-
-          counter(counter)
-          setRPSResults(data)
-          
+         
+          //setRPSResults(data)
+          roundCounter(counter, data)
+         
         });
 
     }
   }
 
-  function counter(counter){
-    counter++
-    if (counter == 4) {}
-      setRPSResults('')
-      counter=1    
+  function roundCounter(counter : number, data : any){
+    var round = "Round " + data.roundId + ": Player" + data.winner + "wins"
+    setRPSResults(round)
+    incrementWinner(data.winner)
+    resetCounter(counter)
+
+  }
+  function resetCounter(counter: number) {
+    if (counter === 3) {
+      //setRPShistory(data)
+      counter = 1
+    }
+  }
+  function incrementWinner(winner : number) {
+    if (winner === 1) {
+      p1Wins++
+    }
+    if (winner === 2) {
+      p2Wins++
+    }
+    if (winner !== 0) {
+      counter++
     }
   }
   function handleValidation(player1Choice : string, player2Choice : string){
