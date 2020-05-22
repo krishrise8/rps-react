@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION } from 'constants';
 
 type InputComponentProps = {
   Player1Input: string
@@ -34,14 +35,14 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
     if(validChoices){
       const requestOptions = {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'Access-Control-Allow-Origin': 'true'},
-        body: JSON.stringify({ player1Choice: player1Choice.toUpperCase() , player2Choice : player2Choice.toUpperCase()})
+        headers: {'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json', 'Accept': 'application/json'},
+        body: JSON.stringify({ player1Choice: player1Choice.toUpperCase() , player2Choice : player2Choice.toUpperCase(), roundId: counter})
       };
 
       await fetch('http://localhost:8080/game/play', requestOptions)
-        .then(response =>  response.json())
+        .then(response => response.json())
         .then(data => {
-         
+          console.log(data.winner)
           //setRPSResults(data)
           roundCounter(counter, data)
          
@@ -51,7 +52,10 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
   }
 
   function roundCounter(counter : number, data : any){
-    var round = "Round " + data.roundId + ": Player" + data.winner + "wins"
+    var round = "Draw. Play Again"
+    if(data.winner !== 0){
+    var round = "Round " + data.roundID + ": Player " + data.winner + " wins"
+    }
     setRPSResults(round)
     incrementWinner(data.winner)
     resetCounter(counter)
