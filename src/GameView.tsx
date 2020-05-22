@@ -8,16 +8,21 @@ type InputComponentProps = {
 
 
 const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) => {
-  var counter: number = 1
   var p1Wins : number = 0
   var p2Wins : number = 0
 
   const [player1Choice, setP1Choice] = useState<string>(Player1Input)
   const [player2Choice, setP2Choice] = useState<string>(Player2Input)
-  const [rpsResults, setRPSResults] = useState()
-  const [rpsHistory, setRPShistory] = useState({ rpsResults })
+  const [result, sendResult] = useState<number>()
+  const [displayHistory, setDisplayHistory] = useState<Array<string>>([])
   const [p1Error, setP1Error] = useState()
   const [p2Error, setP2Error] = useState<string>()
+  const [counter, setCounter] = useState<number>(0)
+  const [key, setKey] = useState<number>(0)
+  const [allHistory, setAllHistory] = useState<Map<Number, String>>(new Map())
+  const [draw, setDraw] = useState<boolean>(false)
+
+
   
   enum choices{
     'ROCK', 'PAPER', 'SCISSORS'
@@ -42,7 +47,6 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
       await fetch('http://localhost:8080/game/play', requestOptions)
         .then(response => response.json())
         .then(data => {
-          console.log(data.winner)
           //setRPSResults(data)
           roundCounter(counter, data)
          
@@ -52,21 +56,48 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
   }
 
   function roundCounter(counter : number, data : any){
-    var round = "Draw. Play Again"
-    if(data.winner !== 0){
-    var round = "Round " + data.roundID + ": Player " + data.winner + " wins"
+       
+    setKey(key+1)
+    sendResult(data.winner)
+
+    if(counter === 3){
+      setDisplayHistory([])
     }
-    setRPSResults(round)
-    incrementWinner(data.winner)
+
+    if(data.winner !== 0){
+      setDraw(false)
+      var round = "Round " + (counter+1) + ": Player " + data.winner + " wins"
+      setCounter(counter+1)
+      incrementWinner(data.winner)
+      addDisplayHistory(round)
+      addAllHistory(round)
+    }
+
+    else{
+      setDraw(true)
+      var round = "Draw. Play Again"
+      addAllHistory(round)
+    }
+
     resetCounter(counter)
 
   }
+
   function resetCounter(counter: number) {
     if (counter === 3) {
-      //setRPShistory(data)
-      counter = 1
+      setCounter(0)
     }
   }
+  
+  function addAllHistory(round : string){
+    setAllHistory(allHistory.set(key, round))
+  }
+
+  function addDisplayHistory(round : string){
+    displayHistory.push(round)
+    setDisplayHistory(displayHistory)
+  }
+
   function incrementWinner(winner : number) {
     if (winner === 1) {
       p1Wins++
@@ -74,10 +105,8 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
     if (winner === 2) {
       p2Wins++
     }
-    if (winner !== 0) {
-      counter++
-    }
   }
+
   function handleValidation(player1Choice : string, player2Choice : string){
 
     if(!(player1Choice.toUpperCase() in choices)){
@@ -101,7 +130,7 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
   }
   
   return (
-    <div> {Player1Input}{Player2Input}
+    <div> 
       <h3> Player 1</h3>
       <input type={'text'} value={player1Choice} onChange={(e: any) => setP1Choice(e.target.value)} />
       <div>{p1Error}</div>
@@ -109,8 +138,11 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
       <input type={'text'} value={player2Choice} onChange={(e: any) => setP2Choice(e.target.value)} />
       <div>{p2Error}</div>
       <br/>
-      <button onClick={score}> Submit </button> 
-      <h3>{rpsResults}</h3>
+      <button onClick={score}> Submit </button>
+      <div>{ 
+      draw ? (<div>Draw. Play Again</div>) : (displayHistory.map(display => <div>{display}</div>))
+      }</div>
+      {console.log(draw)}
     </div>
   )
 }
