@@ -48,46 +48,46 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
         .then(response => response.json())
         .then(data => {
           //setRPSResults(data)
-          roundCounter(counter, data)
+          RPS(data)
          
         });
-
     }
   }
 
-  function roundCounter(counter : number, data : any){
+  function RPS( data : any){
        
-    setKey(key+1)
-    sendResult(data.winner)
-    
+    //setKey(key+1)
+    //sendResult(data.winner)
+    resetDisplayHistory()
+  
     if(data.winner !== 0){
       setDraw(false)
       var round = "Round " + (counter + 1) + ": Player " + data.winner + " wins"
       incrementWinner(data.winner)
       addDisplayHistory(round)
-      addAllHistory(round)
-      console.log(round)
       setCounter(counter + 1)
-    }
+      //addAllHistory(round)
+          }
 
     else{
       setDraw(true)
       var round = "Draw. Play Again"
-      addAllHistory(round)
+      //addAllHistory(round)
     }
     resetCounter(counter)
   }
 
   
   function resetCounter(counter: number) {
-    if (counter === 3) {
+    if (counter === 2) {
       setCounter(0)
-      setDisplayHistory([])
     }
   }
 
-  function resetDisplayHistory(round: string) {
-    setDisplayHistory([round])
+  function resetDisplayHistory() {
+    if (counter === 0) {
+      setDisplayHistory([])
+    }
   }
   
   function addAllHistory(round : string){
@@ -95,8 +95,8 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
   }
 
   function addDisplayHistory(round : string){
-    displayHistory.push(round)
-    setDisplayHistory(displayHistory)
+    // displayHistory.push(round)
+    setDisplayHistory([...displayHistory, round])
   }
 
   function incrementWinner(winner : number) {
