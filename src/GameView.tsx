@@ -58,13 +58,14 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
        
     //setKey(key+1)
     //sendResult(data.winner)
-    resetDisplayHistory()
+    
   
     if(data.winner !== 0){
       setDraw(false)
       var round = "Round " + (counter + 1) + ": Player " + data.winner + " wins"
-      incrementWinner(data.winner)
-      addDisplayHistory(round)
+      incrementWinner(data.winner);
+      ((counter === 0) ? (setDisplayHistory([round])) : (setDisplayHistory([...displayHistory, round])))
+      //addDisplayHistory(round)
       setCounter(counter + 1)
       //addAllHistory(round)
           }
@@ -75,6 +76,7 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
       //addAllHistory(round)
     }
     resetCounter(counter)
+    
   }
 
   
@@ -84,20 +86,21 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
     }
   }
 
-  function resetDisplayHistory() {
-    if (counter === 0) {
-      setDisplayHistory([])
-    }
-  }
+  // function resetDisplayHistory() {
+  //   if (counter === 0) {
+  //     setDisplayHistory([])
+  //     console.log("reset", counter, displayHistory)
+  //   }
+  // }
   
-  function addAllHistory(round : string){
-    setAllHistory(allHistory.set(key, round))
-  }
+  // function addAllHistory(round : string){
+  //   setAllHistory(allHistory.set(key, round))
+  // }
 
-  function addDisplayHistory(round : string){
-    // displayHistory.push(round)
-    setDisplayHistory([...displayHistory, round])
-  }
+  // function addDisplayHistory(round : string){
+  //   // displayHistory.push(round)
+  //   setDisplayHistory([...displayHistory, round])
+  // }
 
   function incrementWinner(winner : number) {
     if (winner === 1) {
