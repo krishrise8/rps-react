@@ -59,18 +59,15 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
        
     setKey(key+1)
     sendResult(data.winner)
-
-    if(counter === 3){
-      setDisplayHistory([])
-    }
-
+    
     if(data.winner !== 0){
       setDraw(false)
-      var round = "Round " + (counter+1) + ": Player " + data.winner + " wins"
-      setCounter(counter+1)
+      var round = "Round " + (counter + 1) + ": Player " + data.winner + " wins"
       incrementWinner(data.winner)
       addDisplayHistory(round)
       addAllHistory(round)
+      console.log(round)
+      setCounter(counter + 1)
     }
 
     else{
@@ -78,15 +75,19 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
       var round = "Draw. Play Again"
       addAllHistory(round)
     }
-
     resetCounter(counter)
-
   }
 
+  
   function resetCounter(counter: number) {
     if (counter === 3) {
       setCounter(0)
+      setDisplayHistory([])
     }
+  }
+
+  function resetDisplayHistory(round: string) {
+    setDisplayHistory([round])
   }
   
   function addAllHistory(round : string){
@@ -142,7 +143,6 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
       <div>{ 
       draw ? (<div>Draw. Play Again</div>) : (displayHistory.map(display => <div>{display}</div>))
       }</div>
-      {console.log(draw)}
     </div>
   )
 }
