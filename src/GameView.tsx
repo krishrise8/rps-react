@@ -18,6 +18,7 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
   const [p1Error, setP1Error] = useState<string>()
   const [p2Error, setP2Error] = useState<string>()
   const [counter, setCounter] = useState<number>(0)
+  const [winner, setWinner] = useState<Map<String, Number>>()
   const [p1Wins, setP1Wins] = useState<number>(0)
   const [p2Wins, setP2Wins] = useState<number>(0)
   const [allHistory, setAllHistory] = useState<Array<string>>([])
@@ -42,7 +43,7 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
       const requestOptions = {
         method: 'POST',
         headers: {'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json', 'Accept': 'application/json'},
-        body: JSON.stringify({ player1Choice: player1Choice.toUpperCase() , player2Choice : player2Choice.toUpperCase(), roundId: counter})
+        body: JSON.stringify({ player1Name: player1Name, player1Choice: player1Choice.toUpperCase() , player2Name: player2Name, player2Choice : player2Choice.toUpperCase(), roundId: counter})
       };
 
       await fetch('http://localhost:8080/game/play', requestOptions)
@@ -56,14 +57,14 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
 
   function RPS( data : any){
   
-    if(data.winner !== 0){
+    if(data.winnerNumber !== 0){
 
       if(p1Wins === 2 || p2Wins === 2){
         bestOfThree(p1Wins, p2Wins)
       }else{
         setDraw(false)
-        var round = "Round " + (counter + 1) + ": Player " + data.winner + " wins"
-        incrementWinner(data.winner);
+        var round = "Round " + (counter + 1) + ": " + data.winnerName + " wins"
+        incrementWinner(data.winnerNumber);
         ((counter === 0) ? (setRoundHistory([round])) : (setRoundHistory([...roundHistory, round])))
         //addDisplayHistory(round)
       }
@@ -78,7 +79,7 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
   }
 
   function bestOfThree(p1Wins : number, p2Win: number){
-    var winner = (p1Wins === 2 ? "Player 1" : "Player 2")
+    var winner = (p1Wins === 2 ? player1Name : player2Name)
     setRoundHistory([ "Best of three: " + winner + " wins"])
     var historyDate = moment().format('LLL')
     var newHistory = historyDate +  ": "+ winner + " wins Best of 3"
