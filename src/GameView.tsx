@@ -10,8 +10,8 @@ type InputComponentProps = {
 
 const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) => {
 
-  const [player1Name, setP1Name] = useState<string>(Player1Input)
-  const [player2Name, setP2Name] = useState<string>(Player2Input)
+  const [player1Name, setP1Name] = useState<string>("")
+  const [player2Name, setP2Name] = useState<string>("")
   const [player1Choice, setP1Choice] = useState<string>(Player1Input)
   const [player2Choice, setP2Choice] = useState<string>(Player2Input)
   const [roundHistory, setRoundHistory] = useState<Array<string>>([])
@@ -22,7 +22,7 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
   const [p2Wins, setP2Wins] = useState<number>(0)
   const [allHistory, setAllHistory] = useState<Array<string>>([])
   const [draw, setDraw] = useState<boolean>(false)
-
+  const [enterNames, setNames] = useState<boolean>(false)
 
   
   enum choices{
@@ -134,34 +134,52 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
     return (player1Choice.toUpperCase() in choices) && (player2Choice.toUpperCase() in choices)
     
   }
+
+  function addName(){
+    if(player1Name.trim() !== "" && player2Name.trim() !== "" ){
+      setNames(true)
+    }
+
+  }
   
   return (
     <div> 
-      <div className = "playerForms">
-        <h3>Enter Player 1 Name:</h3>
-        <div>
-          <input type={'text'} value={player1Name} onChange={(e: any) => setP1Name(e.target.value)} />
+        {!enterNames &&
+          <div>
+            <h3>{"Enter Player 1 and Player 2 Names: "}</h3>
+            <div>
+              <input type={'text'} value={player1Name} onChange={(e: any) => setP1Name(e.target.value)} />
+              <button onClick={addName}> Add </button>
+            </div>
 
-        </div>
+            <div>
+              <input type={'text'} value={player2Name} onChange={(e: any) => setP2Name(e.target.value)} />
+              <button onClick={addName}> Add </button>
+            </div>
+          </div>
+        }
 
-        <input type={'text'} value={player1Choice} onChange={(e: any) => setP1Choice(e.target.value)} />
-        <div>{p1Error}</div>
+        {enterNames &&
+          <div>
+            <h3>{player1Name}</h3>
+              <input type={'text'} value={player1Choice} onChange={(e: any) => setP1Choice(e.target.value)} />
+              <div>{p1Error}</div>
 
-        <h3> Player 2</h3>
+            <h3>{player2Name}</h3>
+              <input type={'text'} value={player2Choice} onChange={(e: any) => setP2Choice(e.target.value)} />
+              <div>{p2Error}</div>
 
-        <input type={'text'} value={player2Choice} onChange={(e: any) => setP2Choice(e.target.value)} />
-        <div>{p2Error}</div>
-      </div>
+
+            <br/>
+            <button onClick={score}> Submit </button>
+            <br/>
+            <div>{ 
+              draw ? (<div>Draw. Play Again</div>) : (roundHistory.map(display => <div>{display}</div>))
+            }</div>
+          </div>
+        }
 
       <br/>
-      <button onClick={score}> Submit </button>
-      <br/>
-
-      <div>{ 
-      draw ? (<div>Draw. Play Again</div>) : (roundHistory.map(display => <div>{display}</div>))
-      }</div>
-      <br/>
-
       <div className="dd-wrapper">
         <div className="dd-header">
           <div className="dd-header-title">History</div>
