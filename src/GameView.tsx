@@ -155,7 +155,7 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
     if(player2Choice === ""){
       setP2Error('Required')
     }
-    setRoundHistory([])
+    // setRoundHistory([])
     return (player1Choice.toUpperCase() in choices) && (player2Choice.toUpperCase() in choices)
   }
 
