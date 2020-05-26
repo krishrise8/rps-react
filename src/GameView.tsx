@@ -173,23 +173,22 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
             <h3>{"Enter Player 1 and Player 2 Names: "}</h3>
             <div>
               <input type={'text'} value={player1Name} onChange={(e: any) => setP1Name(e.target.value)} />
-              <button onClick={addName}> Add </button>
             </div>
 
             <div>
               <input type={'text'} value={player2Name} onChange={(e: any) => setP2Name(e.target.value)} />
-              <button onClick={addName}> Add </button>
             </div>
+            <button onClick={addName}> Add </button>
           </div>
         }
 
         {enterNames &&
           <div>
-            <h3>{player1Name}</h3>
+            <h3>{player1Name+"'s throw"}</h3>
               <input type={'text'} value={player1Choice} onChange={(e: any) => setP1Choice(e.target.value)} />
               <div>{p1Error}</div>
 
-            <h3>{player2Name}</h3>
+            <h3>{player2Name+"'s throw"}</h3>
               <input type={'text'} value={player2Choice} onChange={(e: any) => setP2Choice(e.target.value)} />
               <div>{p2Error}</div>
 
