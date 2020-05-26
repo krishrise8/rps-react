@@ -56,28 +56,52 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
   }
 
   function RPS( data : any){
-  
+    var player1wins : number = 0;
+    var player2wins : number = 0;
+    // if there's no draw
     if(data.winnerNumber !== 0){
+      incrementWinner(data.winnerNumber);
+      if (data.winnerNumber === 1) {
+        player1wins = p1Wins + 1
+        setP1Wins(p1Wins+1)
+      }
+      if (data.winnerNumber === 2) {
+        player2wins = p2Wins + 1
+        setP2Wins(p2Wins+1)
+      }
+      // if player 1 or player 2 has won twice
+      if(player1wins === 2 || player2wins === 2){
+        // does best of three stuff: displays winner, saves history
+        bestOfThree(player1wins, player2wins)
+        // resets the round counter to zero
+        setCounter(0)
 
-      if(p1Wins === 2 || p2Wins === 2){
-        bestOfThree(p1Wins, p2Wins)
+        // no best of three winner yet
       }else{
         setDraw(false)
-        var round = "Round " + (counter + 1) + ": " + data.winnerName + " wins"
-        incrementWinner(data.winnerNumber);
+        var round = "Round " + (counter + 1) + ": " + data.winnerName + " wins";
+        // incrementWinner(data.winnerNumber);
         ((counter === 0) ? (setRoundHistory([round])) : (setRoundHistory([...roundHistory, round])))
         //addDisplayHistory(round)
+        setCounter(counter + 1)
       }
-      setCounter(counter + 1)
+      // setCounter(counter + 1)
     }
+    // there was a draw
     else{
       setDraw(true)
       var round = "Draw. Play Again"
     }
-    resetCounter(counter)
+    // resetCounter(counter)
     
   }
 
+  /**
+   * In the round results: "Best of three.." and saves the history to
+   * allHistory.
+   * @param p1Wins
+   * @param p2Win
+   */
   function bestOfThree(p1Wins : number, p2Win: number){
     var winner = (p1Wins === 2 ? player1Name : player2Name)
     setRoundHistory([ "Best of three: " + winner + " wins"])
@@ -131,9 +155,8 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
     if(player2Choice === ""){
       setP2Error('Required')
     }
-
+    setRoundHistory([])
     return (player1Choice.toUpperCase() in choices) && (player2Choice.toUpperCase() in choices)
-    
   }
 
   function addName(){
