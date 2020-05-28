@@ -54,6 +54,7 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
     }
   }
 
+  
   function RPS( data : any){
     var player1wins : number = 0;
     var player2wins : number = 0;
@@ -226,16 +227,6 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
             }</div>
           </div>
         }
-
-      <br/>
-      <div className="dd-wrapper">
-        <div className="dd-header">
-          <div className="dd-header-title">History</div>
-        </div>
-        <ul className="dd-list">
-          {allHistory.map(history => <li>{history}</li>)}
-        </ul>
-      </div>
 
     </div>
   )
