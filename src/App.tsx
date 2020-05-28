@@ -3,6 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import GameView from './GameView';
 import History from './History';
+import Leaderboard from './Leaderboard'
 
 function App() {
   return (
@@ -10,6 +11,9 @@ function App() {
         <GameView Player1Input={''} Player2Input={''} />
         <br/>
         <History name="D"/>
+        <br/>
+        <Leaderboard name="A"/>
+
     </div>
   );
 }

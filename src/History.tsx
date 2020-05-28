@@ -1,4 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
 
 type HistoryProps = {
     name: String
@@ -21,16 +25,18 @@ const [allHistory, setAllHistory] : any[] = useState<Array<any>>([])
     
 
     return (
-        <div className="dd-wrapper">
-        <div className="dd-header">
-          <div className="dd-header-title">History</div>
+        <div>
+            <h3>History</h3>
+            <List component="nav" aria-label="history list">
+            {
+            allHistory.map((history: { winner: string; }) => 
+            <ListItem button>
+                <ListItemText primary={history.winner + " wins best of 3"} />
+                </ListItem>   
+            )
+            }
+            </List>
         </div>
-        <ul className="dd-list">
-          {
-          allHistory.map((history: { winner: string; }) => <li>{history.winner + " wins best of 3"}</li>)
-          }
-        </ul>
-      </div>
     )
 
 }
