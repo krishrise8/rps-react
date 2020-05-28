@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION } from 'constants';
 import moment from 'moment'
 
 type InputComponentProps = {
@@ -106,21 +105,47 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
     var winner = (p1Wins === 2 ? player1Name : player2Name)
     setRoundHistory([ "Best of three: " + winner + " wins"])
     var historyDate = moment().format('LLL')
+    var dateObj = historyDate.valueOf()
+    console.log("Date object  " + dateObj)
     var newHistory = historyDate +  ": "+ winner + " wins Best of 3"
     setAllHistory([...allHistory, newHistory])
     setP1Wins(0)
     setP2Wins(0)
 
+    console.log("history date " + historyDate)
     //save history off 
-    saveHistory(historyDate, winner)
+    saveHistory(dateObj, winner)
 
     //save winner off
-    saveWinner(winner)
+    //saveWinner(winner)
   }
 
-  function saveHistory(historyDate : any, winnerText: string){}
+  function saveHistory(historyDate : any, winner: string){
+    ///fetch - POST - save
 
-  function saveWinner(winnerText: string){}
+    const requestOptions = {
+      method: 'POST',
+      headers: {'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json', 'Accept': 'application/json'},
+      body: JSON.stringify({id: 0, playerOne: player1Name, playerTwo: player2Name, winner: winner, date: historyDate})
+    };
+
+    fetch('http://localhost:8080/game/savehistory', requestOptions)
+      .then(response => response.text())
+      .then(data => {
+        if(data === 'true'){
+          console.log('history was inserted')
+        }else{
+          console.log('history failed to insert')
+        }
+        
+      });
+
+  }
+
+
+  function saveWinner(winnerText: string){
+
+  }
 
   
   function resetCounter(counter: number) {
@@ -155,7 +180,6 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
     if(player2Choice === ""){
       setP2Error('Required')
     }
-    // setRoundHistory([])
     return (player1Choice.toUpperCase() in choices) && (player2Choice.toUpperCase() in choices)
   }
 
@@ -173,22 +197,23 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
             <h3>{"Enter Player 1 and Player 2 Names: "}</h3>
             <div>
               <input type={'text'} value={player1Name} onChange={(e: any) => setP1Name(e.target.value)} />
+              <button onClick={addName}> Add </button>
             </div>
 
             <div>
               <input type={'text'} value={player2Name} onChange={(e: any) => setP2Name(e.target.value)} />
+              <button onClick={addName}> Add </button>
             </div>
-            <button onClick={addName}> Add </button>
           </div>
         }
 
         {enterNames &&
           <div>
-            <h3>{player1Name+"'s throw"}</h3>
+            <h3>{player1Name}</h3>
               <input type={'text'} value={player1Choice} onChange={(e: any) => setP1Choice(e.target.value)} />
               <div>{p1Error}</div>
 
-            <h3>{player2Name+"'s throw"}</h3>
+            <h3>{player2Name}</h3>
               <input type={'text'} value={player2Choice} onChange={(e: any) => setP2Choice(e.target.value)} />
               <div>{p2Error}</div>
 
