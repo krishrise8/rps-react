@@ -8,13 +8,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 
 
-
-type LeaderboardProps = {
-    name: String
-}     
-  
-
-const Leaderboard: React.FC<LeaderboardProps>= ({name}) => {
+const Leaderboard: React.FC = () => {
 
 const [allLeaderBoard, setLeaderboard] = useState<Array<any>>([])
 
@@ -36,8 +30,6 @@ const [allLeaderBoard, setLeaderboard] = useState<Array<any>>([])
             width: "100%",
             overflowX: "auto",
             margin: "auto",
-            alignItems: "center",
-            justifyContent: 'center'
           },
         table: {
             margin: "auto",

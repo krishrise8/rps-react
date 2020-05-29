@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import moment from 'moment'
+import History from './History';
 
 type InputComponentProps = {
   Player1Input: string
@@ -23,11 +24,34 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
   const [allHistory, setAllHistory] = useState<Array<string>>([])
   const [draw, setDraw] = useState<boolean>(false)
   const [enterNames, setNames] = useState<boolean>(false)
+  const [user, setUser] = useState<string>("")
+
+  
 
   
   enum choices{
     'ROCK', 'PAPER', 'SCISSORS'
   }
+
+  useEffect(() => {
+
+
+    fetch('http://localhost:8080/game/username')
+    .then(response => response.text())
+    .then(data => {
+        console.log(data)
+        setUser(data)
+        return fetch('http://localhost:8080/game/getHistory/' + data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data)
+        setAllHistory([...allHistory, ...data])
+    })
+    .catch(error => console.log('Request failed', error));
+  
+  }, [])
+
 
   async function score() {
 
@@ -80,19 +104,15 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
       }else{
         setDraw(false)
         var round = "Round " + (counter + 1) + ": " + data.winnerName + " wins";
-        // incrementWinner(data.winnerNumber);
         ((counter === 0) ? (setRoundHistory([round])) : (setRoundHistory([...roundHistory, round])))
-        //addDisplayHistory(round)
         setCounter(counter + 1)
       }
-      // setCounter(counter + 1)
     }
     // there was a draw
     else{
       setDraw(true)
       var round = "Draw. Play Again"
     }
-    // resetCounter(counter)
     
   }
 
@@ -106,7 +126,7 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
     var winner = (p1Wins === 2 ? player1Name : player2Name)
     setRoundHistory([ "Best of three: " + winner + " wins"])
     var historyDate = moment().format('LLL')
-    var dateObj = historyDate.valueOf()
+    var dateObj = moment(historyDate).unix()*1000
     console.log("Date object  " + dateObj)
     var newHistory = historyDate +  ": "+ winner + " wins Best of 3"
     setAllHistory([...allHistory, newHistory])
@@ -118,11 +138,10 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
     saveHistory(dateObj, winner)
 
     //save winner off
-    //saveWinner(winner)
+    saveLeaderboard(winner)
   }
 
   function saveHistory(historyDate : any, winner: string){
-    ///fetch - POST - save
 
     const requestOptions = {
       method: 'POST',
@@ -130,7 +149,7 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
       body: JSON.stringify({id: 0, playerOne: player1Name, playerTwo: player2Name, winner: winner, date: historyDate})
     };
 
-    fetch('http://localhost:8080/game/savehistory', requestOptions)
+    fetch('http://localhost:8080/game/saveHistory', requestOptions)
       .then(response => response.text())
       .then(data => {
         if(data === 'true'){
@@ -144,8 +163,13 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
   }
 
 
-  function saveWinner(winnerText: string){
+  function saveLeaderboard(winnerName: string){
 
+    fetch('http://localhost:8080/game/saveLeaderboard/' + winnerName)
+    .then(response => response.json())
+    .then(data => {
+        console.log(data)
+    });
   }
 
   
@@ -198,13 +222,11 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
             <h3>{"Enter Player 1 and Player 2 Names: "}</h3>
             <div>
               <input type={'text'} value={player1Name} onChange={(e: any) => setP1Name(e.target.value)} />
-              <button onClick={addName}> Add </button>
             </div>
-
             <div>
               <input type={'text'} value={player2Name} onChange={(e: any) => setP2Name(e.target.value)} />
-              <button onClick={addName}> Add </button>
             </div>
+            <button onClick={addName}> Add </button>
           </div>
         }
 
@@ -227,7 +249,8 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
             }</div>
           </div>
         }
-
+        <br/>
+        <History name={user} allHistory={allHistory}/>
     </div>
   )
 }
