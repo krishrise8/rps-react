@@ -129,13 +129,14 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
     var dateObj = moment(historyDate).unix()*1000
     console.log("Date object  " + dateObj)
     var newHistory = historyDate +  ": "+ winner + " wins Best of 3"
+    console.log(newHistory)
+    saveHistory(dateObj, winner)
     setAllHistory([...allHistory, newHistory])
+    console.log("allHistory" + allHistory)
     setP1Wins(0)
     setP2Wins(0)
 
     console.log("history date " + historyDate)
-    //save history off 
-    saveHistory(dateObj, winner)
 
     //save winner off
     saveLeaderboard(winner)
@@ -150,18 +151,12 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
     };
 
     fetch('http://localhost:8080/game/saveHistory', requestOptions)
-      .then(response => response.text())
+      .then(response => response.json())
       .then(data => {
-        if(data === 'true'){
-          console.log('history was inserted')
-        }else{
-          console.log('history failed to insert')
-        }
-        
+          console.log('fetch save History' + data)
       });
 
   }
-
 
   function saveLeaderboard(winnerName: string){
 
@@ -170,13 +165,6 @@ const GameView: React.FC<InputComponentProps> = ({Player1Input, Player2Input}) =
     .then(data => {
         console.log(data)
     });
-  }
-
-  
-  function resetCounter(counter: number) {
-    if (counter === 2) {
-      setCounter(0)
-    }
   }
 
   function incrementWinner(winner : number) {
